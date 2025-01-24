@@ -67,6 +67,7 @@
             // reportViewer1
             // 
             this.reportViewer1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.reportViewer1.LocalReport.ReportEmbeddedResource = "ReporteAdventureWorks.Reporte.rdlc";
             this.reportViewer1.Location = new System.Drawing.Point(0, 83);
             this.reportViewer1.Name = "reportViewer1";
             this.reportViewer1.ServerReport.BearerToken = null;

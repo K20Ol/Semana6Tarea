@@ -14,67 +14,95 @@ namespace ReporteAdventureWorks
 {
     public partial class Form1 : Form
     {
+        private readonly conexion conexion = new conexion();
         public Form1()
         {
-            InitializeComponent();
+            InitializeComponent(); CargarTablas();
+        }
+        private void CargarTablas()
+        {
+            try
+            {
+                using (SqlConnection connection = conexion.obtenerConexion())
+                {
+                    connection.Open();
+                    string query = "SELECT TABLE_SCHEMA + '.' + TABLE_NAME AS FullTableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                cmbTablas.Items.Add(reader["FullTableName"].ToString());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al cargar las tablas: " + ex.Message);
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            conexion con = new conexion();
-            using (SqlConnection connection = con.obtenerConexion())
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand("SELECT TABLE_SCHEMA + '.' + TABLE_NAME AS FullTableName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'", connection);
-                SqlDataReader reader = command.ExecuteReader();
+           
+        }
 
-                while (reader.Read())
+        private void GenerarReporte(string nombreTabla)
+        {
+            try
+            {
+                using (SqlConnection connection = conexion.obtenerConexion())
                 {
-                    cmbTablas.Items.Add(reader["FullTableName"].ToString());
+                    connection.Open();
+
+                    
+                    string query = $"SELECT * FROM [{nombreTabla.Replace(".", "].[")}]";
+                    using (SqlDataAdapter adapter = new SqlDataAdapter(query, connection))
+                    {
+                        
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+
+                     
+                        for (int i = 0; i < dataTable.Columns.Count; i++)
+                        {
+                            dataTable.Columns[i].ColumnName = "DataColumn" + (i + 1);
+                        }
+
+                    
+                        reportViewer1.LocalReport.DataSources.Clear();
+
+                       
+                        Microsoft.Reporting.WinForms.ReportDataSource dataSource = new Microsoft.Reporting.WinForms.ReportDataSource
+                        {
+                            Name = "DataSet1", 
+                            Value = dataTable
+                        };
+                        reportViewer1.LocalReport.DataSources.Add(dataSource);
+
+                        
+                        reportViewer1.RefreshReport();
+                    }
                 }
             }
-            this.reportViewer1.RefreshReport();
-        }
-        private DataTable GetData(string query)
-        {
-            conexion con = new conexion();
-            using (SqlConnection connection = con.obtenerConexion())
+            catch (Exception ex)
             {
-                SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
-                DataTable dataTable = new DataTable();
-                adapter.Fill(dataTable);
-                return dataTable;
+                MessageBox.Show("Error al generar el reporte: " + ex.Message);
             }
-        }
-        private void ShowReport(DataTable dataTable, string tableName)
-        {
-            reportViewer1.Reset();
-            reportViewer1.LocalReport.ReportEmbeddedResource = "ReporteAdventureWorks.Reporte.rdlc"; 
-
-            // Asignar el DataSource al ReportViewer
-            Microsoft.Reporting.WinForms.ReportDataSource rds = new Microsoft.Reporting.WinForms.ReportDataSource("DataSet1", dataTable);
-            reportViewer1.LocalReport.DataSources.Clear();
-            reportViewer1.LocalReport.DataSources.Add(rds);
-
-            // Parámetro opcional para mostrar el nombre de la tabla en el reporte
-          
-
-            reportViewer1.RefreshReport();
         }
         private void btnGenerar_Click(object sender, EventArgs e)
         {
-            if (cmbTablas.SelectedItem != null)
+            if (cmbTablas.SelectedIndex == -1)
             {
-                string selectedTable = cmbTablas.SelectedItem.ToString();
-                string query = $"SELECT * FROM {selectedTable}";
+                MessageBox.Show("Seleccione una tabla para generar el reporte.");
+                return;
+            }
 
-                DataTable dataTable = GetData(query);
-                ShowReport(dataTable, selectedTable);
-            }
-            else
-            {
-                MessageBox.Show("Por favor, selecciona una tabla.");
-            }
+            string tablaSeleccionada = cmbTablas.SelectedItem.ToString();
+            GenerarReporte(tablaSeleccionada);
         }
     }
 }

@@ -68,12 +68,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdventureWorks2022DataSet.Designer.cs">
+    <Compile Include="Modelo\AdventureWorks2022DataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>AdventureWorks2022DataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="Config\conexion.cs" />
+    <Compile Include="Modelo\DataSet1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Presentacion\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,16 +100,27 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Reporte.rdlc" />
-    <None Include="AdventureWorks2022DataSet.xsc">
+    <None Include="Modelo\AdventureWorks2022DataSet.xsc">
       <DependentUpon>AdventureWorks2022DataSet.xsd</DependentUpon>
     </None>
-    <None Include="AdventureWorks2022DataSet.xsd">
+    <None Include="Modelo\AdventureWorks2022DataSet.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>AdventureWorks2022DataSet.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="AdventureWorks2022DataSet.xss">
+    <None Include="Modelo\AdventureWorks2022DataSet.xss">
       <DependentUpon>AdventureWorks2022DataSet.xsd</DependentUpon>
+    </None>
+    <None Include="Modelo\DataSet1.xsc">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </None>
+    <None Include="Modelo\DataSet1.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSet1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Modelo\DataSet1.xss">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -122,7 +138,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controladores\" />
-    <Folder Include="Modelo\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
